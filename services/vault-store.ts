@@ -112,6 +112,23 @@ export async function enforceAutoLock(): Promise<void> {
   else await browser.alarms.create(AUTO_LOCK_ALARM, { when: session.lockAt });
 }
 
+/** Calls `callback` when the stored vault file changes (e.g. saved from another tab). */
+export function onVaultChange(callback: (file: VaultFile) => void): () => void {
+  const listener: Parameters<
+    typeof browser.storage.onChanged.addListener
+  >[0] = (changes, area) => {
+    const change = changes[VAULT_STORAGE_KEY];
+    if (area !== 'local' || change?.newValue == null) return;
+    try {
+      callback(parseVaultFile(change.newValue));
+    } catch {
+      // Ignore invalid data; loadVaultFile will report it on next open.
+    }
+  };
+  browser.storage.onChanged.addListener(listener);
+  return () => browser.storage.onChanged.removeListener(listener);
+}
+
 /** Calls `callback` whenever the vault gets locked (from any popup or the background). */
 export function onLock(callback: () => void): () => void {
   const listener: Parameters<
