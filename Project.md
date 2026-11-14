@@ -174,7 +174,7 @@ Browser targets:
 ## Local Storage
 
 - **One portable, versioned, encrypted vault format** (a single JSON document) shared by every platform.
-- The extension keeps it in IndexedDB; the desktop app keeps it as a `.keynest` file on disk.
+- The extension keeps it in `browser.storage.local` (simpler than IndexedDB for one document); the desktop app keeps it as a `.keynest` file on disk.
 - The same file is used for export/import and for bring-your-own sync (see Future Sync).
 
 Only encrypted credential data should be persisted.
@@ -314,7 +314,7 @@ AES-256-GCM
 Encrypted Credentials
       |
       v
-IndexedDB / SQLite
+storage.local / .keynest file
 ```
 
 ## 5.4 Manifest V3 Service-Worker Lifecycle
@@ -383,7 +383,7 @@ Tasks:
 4. Implement Argon2id key derivation (WASM; allow `'wasm-unsafe-eval'` in the extension CSP).
 5. Implement vault-key generation and wrapping.
 6. Implement AES-256-GCM encryption and decryption.
-7. Implement IndexedDB storage of the portable vault format.
+7. Implement `storage.local` persistence of the portable vault format.
 8. Implement vault locking, unlocking and auto-lock, with the service-worker key strategy from 5.4.
 9. Build the credential dashboard.
 10. Add, edit, delete and search credentials.
@@ -780,7 +780,7 @@ Our immediate tasks:
 | Extension framework | WXT                                                             |
 | Frontend            | React                                                           |
 | Vault format        | Single portable encrypted JSON document                         |
-| Local storage       | IndexedDB (extension), `.keynest` file (desktop)                |
+| Local storage       | `storage.local` (extension), `.keynest` file (desktop)          |
 | Key derivation      | Argon2id (WASM, `hash-wasm`)                                    |
 | Encryption          | AES-256-GCM (Web Crypto)                                        |
 | Backend             | None                                                            |
