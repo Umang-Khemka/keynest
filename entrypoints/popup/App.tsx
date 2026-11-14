@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 
+import { useVault } from '@/hooks/useVault';
 import type { Credential } from '@/lib/vault/types';
+import { openManagePage } from '@/services/navigation';
 import { AUTO_LOCK_MINUTES } from '@/services/vault-store';
 
 import { CLIPBOARD_CLEAR_SECONDS, copySecret } from './clipboard';
@@ -8,7 +10,6 @@ import { CredentialForm } from './screens/CredentialForm';
 import { Setup } from './screens/Setup';
 import { Unlock } from './screens/Unlock';
 import { VaultList } from './screens/VaultList';
-import { useVault } from './useVault';
 
 type View = { screen: 'list' } | { screen: 'edit'; credential?: Credential };
 
@@ -44,14 +45,22 @@ function App() {
         <img src="/icon/48.png" alt="" width={22} height={22} />
         <h1>KeyNest</h1>
         {state.status === 'unlocked' && (
-          <button
-            type="button"
-            className="header__lock"
-            onClick={lock}
-            title={`Locks automatically after ${AUTO_LOCK_MINUTES} minutes without use`}
-          >
-            Lock
-          </button>
+          <div className="header__actions">
+            <button
+              type="button"
+              onClick={openManagePage}
+              title="Backup, import and master password"
+            >
+              Settings
+            </button>
+            <button
+              type="button"
+              onClick={lock}
+              title={`Locks automatically after ${AUTO_LOCK_MINUTES} minutes without use`}
+            >
+              Lock
+            </button>
+          </div>
         )}
       </header>
 

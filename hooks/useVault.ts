@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import type { Credential, VaultFile } from '@/lib/vault/types';
 import {
+  changeMasterPassword,
   createVault,
   deleteCredential,
   putCredential,
@@ -12,6 +13,7 @@ import {
   loadVaultFile,
   lock as lockSession,
   onLock,
+  onVaultChange,
   resumeSession,
   saveVaultFile,
   startSession,
@@ -76,6 +78,31 @@ export function useVault() {
     [],
   );
 
+  // Another tab saved the vault (import, password change, edit): reload it so
+  // this page never writes back a stale copy.
+  const stateRef = useRef(state);
+  useEffect(() => {
+    stateRef.current = state;
+  }, [state]);
+  useEffect(
+    () =>
+      onVaultChange((file) => {
+        const current = stateRef.current;
+        if (current.status === 'locked') {
+          setState({ status: 'locked', file });
+        } else if (
+          current.status === 'unlocked' &&
+          current.file.updatedAt !== file.updatedAt
+        ) {
+          void readCredentials({ file, key: current.key }).then(
+            (credentials) => setState({ ...current, file, credentials }),
+            () => void lockSession(),
+          );
+        }
+      }),
+    [],
+  );
+
   // Using the popup counts as activity and pushes auto-lock back.
   useEffect(() => {
     const onActivity = () => {
@@ -134,5 +161,46 @@ export function useVault() {
     await commit(deleteCredential(state.file, id));
   }
 
-  return { state, create, unlock, lock, save, remove };
+  /** Saves many credentials (an import) in one write. */
+  async function saveMany(credentials: Credential[]) {
+    if (state.status !== 'unlocked') return;
+    let file = state.file;
+    for (const credential of credentials) {
+      file = await putCredential({ file, key: state.key }, credential);
+    }
+    await commit(file);
+  }
+
+  /**
+   * Uses a backup file as this browser's vault. Only allowed before a vault
+   * exists, so it can never overwrite saved passwords.
+   * Throws WrongPasswordError when the backup's master password is incorrect.
+   */
+  async function restore(file: VaultFile, masterPassword: string) {
+    if (state.status !== 'setup') return;
+    const key = await unlockVault(file, masterPassword);
+    const credentials = await readCredentials({ file, key });
+    await saveVaultFile(file);
+    await startSession(key);
+    setState({ status: 'unlocked', file, key, credentials });
+  }
+
+  /** Throws WrongPasswordError when the current master password is incorrect. */
+  async function changePassword(current: string, next: string) {
+    if (state.status !== 'unlocked') return;
+    await unlockVault(state.file, current);
+    await commit(await changeMasterPassword(state, next));
+  }
+
+  return {
+    state,
+    create,
+    unlock,
+    lock,
+    save,
+    remove,
+    saveMany,
+    restore,
+    changePassword,
+  };
 }

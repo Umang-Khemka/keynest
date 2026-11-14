@@ -81,8 +81,10 @@ p {
   font-weight: 600;
 }
 
-.header__lock {
+.header__actions {
   margin-left: auto;
+  display: flex;
+  gap: 6px;
 }
 
 .screen {

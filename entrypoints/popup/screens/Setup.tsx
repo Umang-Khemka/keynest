@@ -1,5 +1,7 @@
 import { useState, type FormEvent } from 'react';
 
+import { openManagePage } from '@/services/navigation';
+
 const MIN_LENGTH = 12;
 
 interface Props {
@@ -70,6 +72,10 @@ export function Setup({ onCreate }: Props) {
 
       <button type="submit" className="primary" disabled={!canSubmit}>
         {busy ? 'Creating vault…' : 'Create vault'}
+      </button>
+
+      <button type="button" className="link" onClick={openManagePage}>
+        Have a KeyNest backup? Restore it instead
       </button>
     </form>
   );

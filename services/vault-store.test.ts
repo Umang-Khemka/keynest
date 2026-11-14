@@ -11,6 +11,7 @@ import {
   loadVaultFile,
   lock,
   onLock,
+  onVaultChange,
   resumeSession,
   saveVaultFile,
   startSession,
@@ -98,6 +99,17 @@ describe('session and auto-lock', () => {
 
     expect(await resumeSession()).toBeNull();
     expect(listener).toHaveBeenCalledOnce();
+    unsubscribe();
+  });
+
+  it('notifies listeners when the vault file is saved elsewhere', async () => {
+    const { file } = await createVault('master password', MIN_KDF_COST);
+    const listener = vi.fn();
+    const unsubscribe = onVaultChange(listener);
+
+    await saveVaultFile(file);
+
+    expect(listener).toHaveBeenCalledWith(file);
     unsubscribe();
   });
 

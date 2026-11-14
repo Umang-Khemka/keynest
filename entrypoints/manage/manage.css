@@ -1,0 +1,47 @@
+body {
+  width: auto;
+  min-height: 100vh;
+  font-size: 15px;
+}
+
+.page {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 0 16px 48px;
+}
+
+.page .header {
+  padding: 16px 0;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 20px;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.section h2 {
+  font-size: 1.1rem;
+}
+
+.section .actions {
+  justify-content: flex-start;
+}
+
+.success {
+  color: #1f8a4c;
+}
+
+@media (prefers-color-scheme: dark) {
+  .success {
+    color: #5fd08f;
+  }
+}
+
+input[type='file'] {
+  font: inherit;
+}

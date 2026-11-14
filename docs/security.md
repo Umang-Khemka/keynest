@@ -53,7 +53,19 @@ code running in a trusted extension context can read it while unlocked.
   (offscreen document in Chrome, background page in Firefox).
 - **Unlock attempts are not rate-limited** beyond the cost of Argon2id.
 - **Deletion tombstones** for sync merging (Phase 8).
-- **Encrypted export/import and CSV import** UI not built yet.
+- **CSV imports are plaintext files.** The import screen warns users to delete
+  the file afterwards; KeyNest cannot do it for them.
+
+## Backup, restore and import (Phase 1)
+
+- **Backup** is the vault file itself, downloaded as `.keynest` JSON. It stays
+  encrypted with the master password that was current at export time.
+- **Restore** is only offered before a vault exists, so it can never overwrite
+  saved passwords. The backup's master password must unlock it first.
+- **Import** (CSV or another backup) only adds entries. Exact duplicates are
+  skipped; for the same entry id, the newer version wins.
+- All file handling runs on a full-tab extension page, not in the popup.
+- Imported files are limited to 10 MB and validated before use.
 
 ## Threat model
 
