@@ -1,0 +1,63 @@
+:root {
+  --bg: #ffffff;
+  --fg: #1b1f24;
+  --muted: #5b636e;
+  --border: #e3e6ea;
+
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    Ubuntu,
+    sans-serif;
+  line-height: 1.5;
+  color-scheme: light dark;
+  color: var(--fg);
+  background-color: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #17191c;
+    --fg: #e8eaed;
+    --muted: #9aa1ab;
+    --border: #2c3036;
+  }
+}
+
+body {
+  margin: 0;
+  width: 340px;
+  background-color: var(--bg);
+}
+
+.popup {
+  padding: 16px;
+}
+
+.popup__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.popup__header h1 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.popup__status {
+  margin: 16px 0 4px;
+  font-weight: 500;
+}
+
+.popup__hint {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
